@@ -1,0 +1,3 @@
+eval_name,metric,value,threshold,pass_fail
+judge_consistency,max_stdev_across_criteria,0.707,< 1.5,PASS
+position_bias,max_pro_con_delta_after_swap_correction,3,< 1.0,FAIL

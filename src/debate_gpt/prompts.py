@@ -5,18 +5,49 @@ except for `build_judge_messages` which returns a `JudgePromptBundle` exposing
 the `pro_label` / `con_label` mapping for the bias-mitigation invariant
 (PRD §3.4).
 
-Pro and Con enforce a ~200-word target via the system prompt. The Judge
-prompt labels arguments as "Speaker A" / "Speaker B" — never "Pro" / "Con" —
-so position-label bias is not encoded in the judge's view.
+Pro and Con enforce a ~200-word target across strictly 3 paragraphs via 
+system prompts with few-shot examples. The Judge prompt labels arguments 
+as "Speaker A" / "Speaker B" — never "Pro" / "Con".
 """
 
 from __future__ import annotations
 
-from typing import NamedTuple
+from typing import Literal, NamedTuple
 
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from .state import DebateState
+
+Persona = Literal["oxford", "academic", "street"]
+
+_DEFAULT_PERSONA: Persona = "academic"
+
+_PERSONA_STYLE: dict[Persona, str] = {
+    "oxford": (
+        "\n\nStyle: Oxford Union debate register. Formal, rhetorically "
+        "polished, measured cadence. Address the motion directly "
+        '("This House believes...", "I put it to you that..."). '
+        "No slang."
+    ),
+    "academic": (
+        "\n\nStyle: academic/analytical register. Precise, hedge "
+        "appropriately, favor named studies and mechanisms over rhetoric. "
+        "Neutral, journal-article tone."
+    ),
+    "street": (
+        "\n\nStyle: casual, direct, conversational register. Short "
+        "sentences, plain words, no jargon. Still cite a real fact or "
+        "example — just say it plainly, like you're making the point to "
+        "a friend, not writing an essay."
+    ),
+}
+
+
+def _resolve_persona(state: DebateState) -> Persona:
+    persona = state.get("persona", _DEFAULT_PERSONA)  # type: ignore[attr-defined]
+    if persona not in _PERSONA_STYLE:
+        return _DEFAULT_PERSONA
+    return persona  # type: ignore[return-value]
 
 
 # ---------- Pro ----------
@@ -25,18 +56,28 @@ PRO_SYSTEM = """You are a skilled debater arguing FOR the motion.
 
 Rules:
 - Make ONE focused argument (not a survey of every point).
-- Ground it in concrete evidence: cite at least one real study, statistic, \
-historical precedent, or named example. Vague claims score poorly.
-- Aim for roughly 200 words. Hard cap: 220 words.
-- Do NOT reference the other side's argument — you do not know it yet in \
-round 1; in later rounds address it directly without naming "the opponent".
+- Ground it in concrete evidence: cite at least one real study, statistic, historical precedent, or named example. Vague claims score poorly.
+- STRUCTURE REQUIREMENT: You MUST write STRICTLY 3 PARAGRAPHS. Do not write 4+ paragraphs or single-block text.
+- LENGTH REQUIREMENT: Write strictly between 180 and 220 words.
+- CITATION FORMAT: Do NOT include a "References", "Works Cited", or "Bibliography" section at the end. Integrate all citations directly into the prose.
+- Do NOT reference the other side's argument — you do not know it yet in round 1; in later rounds address it directly without naming "the opponent".
 - No preamble. No bullet headers. Open with the strongest sentence you have.
-- Output ONLY the argument text, nothing else."""
+- Output ONLY the argument text, nothing else.
+
+EXAMPLE OF EXACT STRUCTURE, FORMAT, AND LENGTH (STRICTLY 3 PARAGRAPHS):
+
+Universal basic income (UBI) provides essential financial security that directly stimulates local economic growth. A comprehensive 2020 study by the National Bureau of Economic Research analyzed trial implementations and revealed that direct cash transfers significantly increase consumer spending in municipal markets, creating a resilient bottom-up economic drive.
+
+Furthermore, unconditional financial support lowers public healthcare expenditures by mitigating poverty-induced stress. Data from Stockton's SEED project demonstrated that guaranteed income recipients experienced lower rates of chronic fatigue and emergency health visits, allowing public health systems to reallocate critical resources effectively.
+
+By establishing a reliable economic floor and improving public wellness metrics, UBI operates as a high-yield investment in human capital. Sustained support empowers individuals to pursue education and entrepreneurial ventures, ultimately cultivating a robust, adaptable labor force capable of driving long-term national prosperity."""
 
 
 def build_pro_messages(state: DebateState) -> list:
+    persona = _resolve_persona(state)
+    system = PRO_SYSTEM + _PERSONA_STYLE[persona]
     return [
-        SystemMessage(content=PRO_SYSTEM),
+        SystemMessage(content=system),
         HumanMessage(
             content=(
                 f"Topic: {state['topic']}\n"
@@ -54,18 +95,28 @@ CON_SYSTEM = """You are a skilled debater arguing AGAINST the motion.
 
 Rules:
 - Make ONE focused argument (not a survey of every point).
-- Ground it in concrete evidence: cite at least one real study, statistic, \
-historical precedent, or named example. Vague claims score poorly.
-- Aim for roughly 200 words. Hard cap: 220 words.
-- Do NOT reference the other side's argument — you do not know it yet in \
-round 1; in later rounds address it directly without naming "the opponent".
+- Ground it in concrete evidence: cite at least one real study, statistic, historical precedent, or named example. Vague claims score poorly.
+- STRUCTURE REQUIREMENT: You MUST write STRICTLY 3 PARAGRAPHS. Do not write 1-2 brief paragraphs or multi-page essays.
+- LENGTH REQUIREMENT: Write strictly between 180 and 220 words. Fully elaborate across all 3 paragraphs.
+- CITATION FORMAT: Do NOT include a "References", "Works Cited", or "Bibliography" section at the end. Integrate all citations directly into the prose.
+- Do NOT reference the other side's argument — you do not know it yet in round 1; in later rounds address it directly without naming "the opponent".
 - No preamble. No bullet headers. Open with the strongest sentence you have.
-- Output ONLY the argument text, nothing else."""
+- Output ONLY the argument text, nothing else.
+
+EXAMPLE OF EXACT STRUCTURE, FORMAT, AND LENGTH (STRICTLY 3 PARAGRAPHS):
+
+Implementing a universal basic income imposes an unsustainable fiscal burden that threatens macroeconomic stability. According to a 2021 financial assessment by the Center for Budget and Policy Priorities, funding a nationwide unconditional grant would require staggering tax hikes or drastic reductions in targeted, high-impact social welfare programs.
+
+Moreover, broad cash distributions dilute resources that could otherwise address acute systemic disadvantages. Empirical evaluation of Alaska's Permanent Fund dividend showed that broad, non-means-tested payouts fail to reduce poverty as effectively as targeted assistance programs like specialized food subsidies or housing vouchers.
+
+Diverting limited national revenue toward unconditional transfers undermines tailored social safety nets while stoking inflationary pressures. A balanced economic framework must prioritize structured, conditional social programs that directly uplift vulnerable populations without destabilizing broader fiscal policy."""
 
 
 def build_con_messages(state: DebateState) -> list:
+    persona = _resolve_persona(state)
+    system = CON_SYSTEM + _PERSONA_STYLE[persona]
     return [
-        SystemMessage(content=CON_SYSTEM),
+        SystemMessage(content=system),
         HumanMessage(
             content=(
                 f"Topic: {state['topic']}\n"
@@ -107,27 +158,14 @@ Return a JSON object with EXACTLY these fields and NOTHING else \
 
 
 class JudgePromptBundle(NamedTuple):
-    """The judge's prompt plus the label mapping for the bias-mitigation rule.
-
-    The judge node derives the verdict translation from the `swap` boolean
-    (single source of truth). `pro_label` / `con_label` are exposed for
-    logging and to keep the prompt construction in one place.
-    """
-
     messages: list
-    pro_label: str  # "Speaker A" or "Speaker B"
-    con_label: str  # the opposite
+    pro_label: str
+    con_label: str
 
 
 def build_judge_messages(
     state: DebateState, pro_text: str, con_text: str, swap: bool
 ) -> JudgePromptBundle:
-    """Build the judge prompt.
-
-    `swap=True` inverts which argument is labeled Speaker A — the bias
-    mitigation pattern from PRD §3.4. Day 6's eval suite compares scores
-    across swap values to detect position-label bias.
-    """
     if swap:
         speaker_a_text, speaker_b_text = con_text, pro_text
         pro_label, con_label = "Speaker B", "Speaker A"

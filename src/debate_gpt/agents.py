@@ -7,6 +7,16 @@ Per PRD §3.4:
 
 Each node is built as a factory `(llm) -> node_fn` so Day 5 tests can inject
 fake LLMs without monkey-patching globals.
+
+Length-imbalance fix (Day 6): a prompt-only instruction ("respond in
+180-220 words") was unreliable — llama-3.1-8b-instant (Con) would
+routinely stop well short of that, while allam-2-7b (Pro) complied more
+often, giving Pro a systematic evidence/persuasion edge unrelated to
+argument quality. `_ensure_min_words` enforces the floor in CODE: if the
+model's output is short, it is fed back its own partial argument and
+asked to continue, up to `_MAX_CONTINUATION_CALLS` times, until the
+minimum is met (or the retry budget is exhausted, in which case we log
+a warning and use what we have rather than looping forever).
 """
 
 from __future__ import annotations
@@ -36,6 +46,145 @@ logger = logging.getLogger(__name__)
 # newly-flushed content chunk. Called from inside a sync thread; must not
 # raise. Used by Day 3 SSE.
 ChunkSink = Callable[[str, int, str], None]
+
+
+# ---------- Length enforcement (Day 6 fix) ----------
+
+_MIN_WORDS = 180
+_MAX_WORDS = 220
+_MAX_CONTINUATION_CALLS = 5  # raised from 2 — some models need more nudges
+
+# Sentence-boundary splitter for truncation. Deliberately simple (no NLP
+# dependency) — splits on ". ", "! ", "? " followed by a capital letter,
+# which is good enough for the debater agents' own generated prose.
+_SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+(?=[A-Z])")
+
+
+def _continue_prompt(current_words: int) -> str:
+    """Build a continuation prompt with the EXACT remaining word count
+    needed, rather than a vague "80-100 more words" ask. Telling the
+    model precisely how far short it is (rather than a generic range)
+    closes the gap far more reliably — a vague target lets a terse
+    model round down to "close enough"."""
+    remaining = max(_MIN_WORDS - current_words, 40)
+    return (
+        f"Your argument so far is only {current_words} words. You MUST "
+        f"write at least {remaining} MORE words before you are done — "
+        f"this is a strict requirement. Continue elaborating on the SAME "
+        f"argument: add a second piece of supporting evidence, address an "
+        f"obvious counterargument, cite another concrete example, or "
+        f"explain the mechanism behind your claim in more depth. Do not "
+        f"repeat what you already said. Do not summarize or conclude — "
+        f"just keep building the argument. Output ONLY the additional "
+        f"text, with no preamble."
+    )
+
+
+def _word_count(text: str) -> int:
+    return len(text.split())
+
+
+def _enforce_max_words(
+    content: str, event_name: str, round_no: int
+) -> str:
+    """If `content` exceeds `_MAX_WORDS`, truncate at the last complete
+    sentence boundary at or before the limit — never mid-sentence.
+
+    This is the ceiling counterpart to `_ensure_min_words`'s floor: Pro
+    (allam-2-7b) tends to run long on its own, and without an explicit
+    cap it could keep growing well past 220 while Con (after continuation
+    calls) lands closer to 200-220 — reintroducing the same length
+    imbalance from the other direction. Both agents should land in the
+    same 180-220 band.
+    """
+    if _word_count(content) <= _MAX_WORDS:
+        return content
+
+    sentences = _SENTENCE_BOUNDARY.split(content.strip())
+    kept: list[str] = []
+    word_total = 0
+    for sentence in sentences:
+        sentence_words = _word_count(sentence)
+        if word_total + sentence_words > _MAX_WORDS and kept:
+            # Adding this sentence would exceed the cap, and we already
+            # have at least one sentence kept — stop here.
+            break
+        kept.append(sentence)
+        word_total += sentence_words
+        if word_total >= _MAX_WORDS:
+            break
+
+    truncated = " ".join(kept)
+    logger.info(
+        "%s round=%d truncated %d -> %d words (cap %d)",
+        event_name, round_no, _word_count(content), _word_count(truncated), _MAX_WORDS,
+    )
+    return truncated
+
+
+def _ensure_min_words(
+    llm,
+    base_messages: list,
+    content: str,
+    event_name: str,
+    round_no: int,
+    chunk_sink: ChunkSink | None,
+) -> str:
+    """If `content` is under `_MIN_WORDS`, ask the model to continue (up
+    to `_MAX_CONTINUATION_CALLS` times) and append the result.
+
+    This is a code-level enforcement, not a prompt instruction — the
+    Day 6 length-imbalance bug showed that asking nicely in the system
+    prompt is not reliable across models (llama-3.1-8b-instant in
+    particular stayed under the 180-word floor even with a vague
+    "add 80-100 words" continuation ask). Each retry now tells the model
+    the EXACT word count so far and the exact number of words still
+    needed, and the retry budget is higher (5 instead of 2) so a model
+    that only adds ~20-30 words per call still converges.
+
+    Continuation calls are plain `invoke()` (not streamed) since they're
+    short follow-ups; if a `chunk_sink` is attached, the appended text
+    is flushed as one additional chunk under the same
+    `event_name`/`round_no` so the SSE client sees it as a natural
+    continuation of the same argument.
+
+    NOTE: this only enforces the FLOOR. The caller must also call
+    `_enforce_max_words` afterward, since a continuation call could
+    overshoot the ceiling — the two are separate, symmetric checks.
+    """
+    attempts = 0
+    while _word_count(content) < _MIN_WORDS and attempts < _MAX_CONTINUATION_CALLS:
+        attempts += 1
+        current_words = _word_count(content)
+        convo = list(base_messages) + [
+            AIMessage(content=content),
+            HumanMessage(content=_continue_prompt(current_words)),
+        ]
+        response = llm.invoke(convo)
+        addition = _extract_content(response).strip()
+        if not addition:
+            logger.warning(
+                "%s round=%d continuation_call=%d/%d returned empty — stopping",
+                event_name, round_no, attempts, _MAX_CONTINUATION_CALLS,
+            )
+            break
+        content = f"{content} {addition}"
+        if chunk_sink is not None:
+            chunk_sink(event_name, round_no, f" {addition}")
+        logger.info(
+            "%s round=%d continuation_call=%d/%d prev_words=%d new_word_count=%d",
+            event_name, round_no, attempts, _MAX_CONTINUATION_CALLS,
+            current_words, _word_count(content),
+        )
+
+    final_count = _word_count(content)
+    if final_count < _MIN_WORDS:
+        logger.warning(
+            "%s round=%d still under min words after %d continuation "
+            "call(s): %d words (target %d) — using as-is",
+            event_name, round_no, attempts, final_count, _MIN_WORDS,
+        )
+    return content
 
 
 # ---------- LLM clients ----------
@@ -120,8 +269,6 @@ def _stream_and_collect(
 def make_pro_node(llm, chunk_sink: ChunkSink | None = None) -> NodeFn:
     def pro_node(state: DebateState) -> dict:
         messages = build_pro_messages(state)
-        # Use the streaming path only when a sink is attached; otherwise
-        # call invoke() so dry-run / pytests don't pay the streaming cost.
         if chunk_sink is None:
             response = llm.invoke(messages)
             content = _extract_content(response)
@@ -129,7 +276,14 @@ def make_pro_node(llm, chunk_sink: ChunkSink | None = None) -> NodeFn:
             content = _stream_and_collect(
                 llm, messages, "pro_token", state["round"], chunk_sink
             )
-        logger.info("pro round=%d chars=%d", state["round"], len(content))
+        content = _ensure_min_words(
+            llm, messages, content, "pro_token", state["round"], chunk_sink
+        )
+        content = _enforce_max_words(content, "pro_token", state["round"])
+        logger.info(
+            "pro round=%d chars=%d words=%d",
+            state["round"], len(content), _word_count(content),
+        )
         return {"messages": [AIMessage(content=content, name="Pro")]}
 
     return pro_node
@@ -145,7 +299,14 @@ def make_con_node(llm, chunk_sink: ChunkSink | None = None) -> NodeFn:
             content = _stream_and_collect(
                 llm, messages, "con_token", state["round"], chunk_sink
             )
-        logger.info("con round=%d chars=%d", state["round"], len(content))
+        content = _ensure_min_words(
+            llm, messages, content, "con_token", state["round"], chunk_sink
+        )
+        content = _enforce_max_words(content, "con_token", state["round"])
+        logger.info(
+            "con round=%d chars=%d words=%d",
+            state["round"], len(content), _word_count(content),
+        )
         return {"messages": [AIMessage(content=content, name="Con")]}
 
     return con_node
