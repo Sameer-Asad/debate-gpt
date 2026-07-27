@@ -129,21 +129,31 @@ def build_con_messages(state: DebateState) -> list:
 
 
 # ---------- Judge ----------
+JUDGE_SYSTEM = """You are an impartial, highly rigorous debate judge.
 
-JUDGE_SYSTEM = """You are an impartial debate judge.
+You will receive two arguments labeled strictly as "Speaker A" and "Speaker B".
+You must NOT infer which side (for or against) either speaker represents from the labels.
 
-You will receive two arguments labeled ONLY as "Speaker A" and "Speaker B".
-You must NOT infer which side (for or against) either speaker represents \
-from the labels. Judge the arguments purely on their merits.
+CRITICAL EVALUATION RULES:
+1. ORDER NEUTRALITY: Do NOT give higher scores to Speaker B simply because their argument appears second in the prompt text. Evaluate Speaker A and Speaker B with identical standards regardless of presentation sequence or context position.
+2. INDEPENDENT RUBRIC: Judge each argument purely on its internal merits (Logic, Evidence, Persuasion).
 
 Score each speaker 0-10 on three criteria:
-- logic:      Is the reasoning valid and free of obvious fallacies?
-- evidence:   Are the factual claims supported by real, citable evidence?
-- persuasion: Is the argument framed and written to actually convince a \
-skeptical reader?
+- logic:       Is the reasoning valid and free of obvious fallacies?
+- evidence:    Are the factual claims supported by real, citable evidence?
+- persuasion:  Is the argument framed and written to actually convince a skeptical reader?
 
-Return a JSON object with EXACTLY these fields and NOTHING else \
-(no markdown fences, no commentary, no trailing prose):
+Return a JSON object with EXACTLY these fields and NOTHING else (no markdown fences, no commentary, no trailing prose):
+
+1. ORDER NEUTRALITY: Do NOT give higher scores to Speaker B simply because their argument appears second in the prompt text. Evaluate Speaker A and Speaker B with identical standards regardless of presentation sequence or context position.
+2. INDEPENDENT RUBRIC: Judge each argument purely on its internal merits (Logic, Evidence, Persuasion).
+
+Score each speaker 0-10 on three criteria:
+- logic:       Is the reasoning valid and free of obvious fallacies?
+- evidence:    Are the factual claims supported by real, citable evidence?
+- persuasion:  Is the argument framed and written to actually convince a skeptical reader?
+
+Return a JSON object with EXACTLY these fields and NOTHING else (no markdown fences, no commentary, no trailing prose):
 
 {
   "speaker_a_logic": <int 0-10>,

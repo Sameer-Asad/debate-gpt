@@ -1,3 +1,7 @@
 eval_name,metric,value,threshold,pass_fail
 judge_consistency,max_stdev_across_criteria,0.707,< 1.5,PASS
 position_bias,max_pro_con_delta_after_swap_correction,3,< 1.0,FAIL
+2026-07-27T22:19:16.182728,judge_consistency,max_stdev_across_criteria,1.304,< 1.5,PASS
+2026-07-27T22:19:16.182728,position_bias,max_pro_con_delta_after_swap_correction,4,< 1.0,FAIL
+2026-07-27T22:22:42.849511,judge_consistency,max_stdev_across_criteria,1.0,< 1.5,PASS
+2026-07-27T22:22:42.849511,position_bias,max_pro_con_delta_after_swap_correction,3,< 1.0,FAIL

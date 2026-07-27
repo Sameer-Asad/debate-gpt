@@ -1,18 +1,7 @@
 """Day 6 eval report runner (PRD §9.4).
 
 Runs the judge_consistency and position_bias evals (real LLM calls, not
-mocked) and writes:
-  - eval_results.csv       summary table (eval_name, metric, value,
-                            threshold, pass/fail)
-  - eval_results_raw.json  full raw observations per eval (all 5
-                            consistency runs, both bias-swap scores,
-                            and any exceptions), for debugging failures
-
-Scope note: PRD §9.4 lists four evals (judge consistency, position bias,
-schema compliance, argument quality). This report runs the first two —
-judge consistency and position bias — since those directly validate this
-project's core bias-mitigation claim (PRD §3.4). Schema compliance and
-argument quality are scoped out of this Day 6 pass; see PROGRESS.md.
+mocked) and appends evaluation metrics and raw observations per run.
 
 Run with:
     python tests/evals/eval_report.py
@@ -23,6 +12,7 @@ import csv
 import json
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -97,12 +87,18 @@ def run_all_evals() -> tuple[list[dict], dict]:
     return summary_rows, raw_results
 
 
-def write_csv(rows: list[dict]) -> None:
-    with open(CSV_PATH, "w", newline="", encoding="utf-8") as f:
+def write_csv(rows: list[dict], run_timestamp: str) -> None:
+    """Appends evaluation summary rows to CSV, creating the header if the file is new."""
+    file_exists = CSV_PATH.exists()
+    
+    with open(CSV_PATH, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["eval_name", "metric", "value", "threshold", "pass_fail"])
+        if not file_exists:
+            writer.writerow(["timestamp", "eval_name", "metric", "value", "threshold", "pass_fail"])
+        
         for row in rows:
             writer.writerow([
+                run_timestamp,
                 row["eval_name"],
                 row["metric"],
                 row["value"],
@@ -111,9 +107,29 @@ def write_csv(rows: list[dict]) -> None:
             ])
 
 
-def write_raw_json(raw_results: dict) -> None:
+def write_raw_json(raw_results: dict, run_timestamp: str) -> None:
+    """Appends raw evaluation results as a historical list inside the JSON file."""
+    history = []
+    
+    if RAW_JSON_PATH.exists():
+        try:
+            with open(RAW_JSON_PATH, "r", encoding="utf-8") as f:
+                data = json.load(f)
+                if isinstance(data, list):
+                    history = data
+                elif isinstance(data, dict):
+                    # Migration: Wrap legacy dict object into list structure
+                    history = [{"timestamp": "legacy_run", "results": data}]
+        except (json.JSONDecodeError, ValueError):
+            history = []
+
+    history.append({
+        "timestamp": run_timestamp,
+        "results": raw_results
+    })
+
     with open(RAW_JSON_PATH, "w", encoding="utf-8") as f:
-        json.dump(raw_results, f, indent=2, default=str)
+        json.dump(history, f, indent=2, default=str)
 
 
 def print_summary(rows: list[dict]) -> None:
@@ -125,14 +141,15 @@ def print_summary(rows: list[dict]) -> None:
     for row in rows:
         result = "PASS" if row["passed"] else "FAIL"
         value_str = str(row["value"]) if row["value"] is not None else "ERROR"
-        print(f"{row['eval_name']:<20} {value_str:<10} {row['threshold']:<10} {result}")
+        print(f"{row['eval_name']:<20} {value_str:<10} {value_str:<10}" if False else f"{row['eval_name']:<20} {value_str:<10} {row['threshold']:<10} {result}")
     print("=" * 60)
-    print(f"\nWrote {CSV_PATH}")
-    print(f"Wrote {RAW_JSON_PATH}")
+    print(f"\nAppended results to {CSV_PATH}")
+    print(f"Appended results to {RAW_JSON_PATH}")
 
 
 if __name__ == "__main__":
+    current_time = datetime.now().isoformat()
     summary_rows, raw_results = run_all_evals()
-    write_csv(summary_rows)
-    write_raw_json(raw_results)
+    write_csv(summary_rows, current_time)
+    write_raw_json(raw_results, current_time)
     print_summary(summary_rows)

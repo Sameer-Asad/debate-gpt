@@ -1,96 +1,299 @@
-{
-  "judge_consistency": {
-    "pro_text": "Implementing a universal basic income (UBI) is economically sound and socially beneficial for global communities. A grounded argument in empirical evidence, this proposal could greatly improve economic conditions and social welfare. A study conducted in Finland demonstrates the positive effect of UBI on subjects' mental well-being. A three-year experiment, published in the Journal of Housing Research, observed that participants experienced a 5-10% decrease in mental health issues like anxiety and depression, which not only improves quality of life but also reduces healthcare costs. Furthermore, UBI would alleviate the burden of poverty-related challenges and empower individuals to embark upon entrepreneurial pursuits, thereby fostering innovation and fostering economic growth. Indeed, a detailed analysis by Joseph Stiglitz and others, published in the American Economic Review, suggests that UBI can considerably reduce poverty and inequality while incentivizing productive activities. Moreover, UBI offers an adaptable solution to the ever-changing world of technologies, offering a safety net for workers facing automation or job displacement. In Scandinavian nations, like Sweden and Denmark, several pilot programs have achieved notable success in fostering entrepreneurship and enhancing overall societal well-being. To illustrate, the Finnish experiment, encompassing close to 2,000 individuals, observed a noticeable increase in self-employment, as reported by the British journal Nature Human Behaviour.",
-    "con_text": "Adopting a universal basic income on a global scale would be economically devastating, exacerbating existing fiscal crises and crippling public debt. The International Monetary Fund (IMF) has consistently highlighted the dire consequences of implementing large-scale unconditional cash transfers, citing the 2019 analysis on poverty reduction in emerging economies. The findings starkly reveal that blanket cash distributions divert resources from targeted poverty alleviation initiatives.\n\nA critical evaluation of Finland's two-year UBI experiment, conducted between 2017 and 2019, demonstrates the ineffectiveness of unconditional basic income in poverty reduction. Researchers found that only 9% of participants experienced substantial income improvement, leading the program's termination due to negligible impact (Sj\u00f6berg et al., 2020). Moreover, the UBI did not significantly alter the recipients' work habits or alleviate financial stress.\n\nThe global economic burden of UBI would far surpass any potential benefits, jeopardizing already vulnerable financial systems. The estimated cost of a global UBI, calculated to be approximately $1.4 trillion annually, would be catastrophic for economies saddled with crippling debt, as in the case of Sri Lanka or Greece. This unsustainable fiscal strain would likely lead to destabilizing inflationary pressures and widespread public discontent.",
-    "runs": [
-      {
-        "speaker_a_logic": 6,
-        "speaker_a_evidence": 5,
-        "speaker_a_persuasion": 6,
-        "speaker_b_logic": 5,
-        "speaker_b_evidence": 4,
-        "speaker_b_persuasion": 5,
-        "round_winner": "pro",
-        "reasoning": "Speaker A offers a more coherent, evidence\u2011based case and frames it persuasively, whereas Speaker B relies on weaker citations and less solid logical connections.",
-        "pro_score": 17,
-        "con_score": 14
+[
+  {
+    "timestamp": "legacy_run",
+    "results": {
+      "judge_consistency": {
+        "pro_text": "Implementing a universal basic income (UBI) is economically sound and socially beneficial for global communities. A grounded argument in empirical evidence, this proposal could greatly improve economic conditions and social welfare. A study conducted in Finland demonstrates the positive effect of UBI on subjects' mental well-being. A three-year experiment, published in the Journal of Housing Research, observed that participants experienced a 5-10% decrease in mental health issues like anxiety and depression, which not only improves quality of life but also reduces healthcare costs. Furthermore, UBI would alleviate the burden of poverty-related challenges and empower individuals to embark upon entrepreneurial pursuits, thereby fostering innovation and fostering economic growth. Indeed, a detailed analysis by Joseph Stiglitz and others, published in the American Economic Review, suggests that UBI can considerably reduce poverty and inequality while incentivizing productive activities. Moreover, UBI offers an adaptable solution to the ever-changing world of technologies, offering a safety net for workers facing automation or job displacement. In Scandinavian nations, like Sweden and Denmark, several pilot programs have achieved notable success in fostering entrepreneurship and enhancing overall societal well-being. To illustrate, the Finnish experiment, encompassing close to 2,000 individuals, observed a noticeable increase in self-employment, as reported by the British journal Nature Human Behaviour.",
+        "con_text": "Adopting a universal basic income on a global scale would be economically devastating, exacerbating existing fiscal crises and crippling public debt. The International Monetary Fund (IMF) has consistently highlighted the dire consequences of implementing large-scale unconditional cash transfers, citing the 2019 analysis on poverty reduction in emerging economies. The findings starkly reveal that blanket cash distributions divert resources from targeted poverty alleviation initiatives.\n\nA critical evaluation of Finland's two-year UBI experiment, conducted between 2017 and 2019, demonstrates the ineffectiveness of unconditional basic income in poverty reduction. Researchers found that only 9% of participants experienced substantial income improvement, leading the program's termination due to negligible impact (Sj\u00f6berg et al., 2020). Moreover, the UBI did not significantly alter the recipients' work habits or alleviate financial stress.\n\nThe global economic burden of UBI would far surpass any potential benefits, jeopardizing already vulnerable financial systems. The estimated cost of a global UBI, calculated to be approximately $1.4 trillion annually, would be catastrophic for economies saddled with crippling debt, as in the case of Sri Lanka or Greece. This unsustainable fiscal strain would likely lead to destabilizing inflationary pressures and widespread public discontent.",
+        "runs": [
+          {
+            "speaker_a_logic": 6,
+            "speaker_a_evidence": 5,
+            "speaker_a_persuasion": 6,
+            "speaker_b_logic": 5,
+            "speaker_b_evidence": 4,
+            "speaker_b_persuasion": 5,
+            "round_winner": "pro",
+            "reasoning": "Speaker A offers a more coherent, evidence\u2011based case and frames it persuasively, whereas Speaker B relies on weaker citations and less solid logical connections.",
+            "pro_score": 17,
+            "con_score": 14
+          },
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 6,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 5,
+            "speaker_b_evidence": 4,
+            "speaker_b_persuasion": 6,
+            "round_winner": "pro",
+            "reasoning": "Speaker A presents a more coherent logical chain and cites multiple studies, albeit with some citation issues, while Speaker B relies on alarmist claims with weaker evidence.",
+            "pro_score": 20,
+            "con_score": 15
+          },
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 5,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 6,
+            "speaker_b_evidence": 5,
+            "speaker_b_persuasion": 7,
+            "round_winner": "pro",
+            "reasoning": "Speaker A presents a slightly stronger logical chain and more compelling persuasive framing, edging out Speaker B despite both having modest evidentiary support.",
+            "pro_score": 19,
+            "con_score": 18
+          },
+          {
+            "speaker_a_logic": 6,
+            "speaker_a_evidence": 5,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 5,
+            "speaker_b_evidence": 5,
+            "speaker_b_persuasion": 6,
+            "round_winner": "pro",
+            "reasoning": "Speaker A presents a more coherent and persuasive case with slightly stronger logical structure and comparable evidence, giving them the edge.",
+            "pro_score": 18,
+            "con_score": 16
+          },
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 5,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 6,
+            "speaker_b_evidence": 5,
+            "speaker_b_persuasion": 6,
+            "round_winner": "pro",
+            "reasoning": "Speaker A scores higher overall due to stronger logical coherence and more persuasive framing, despite some questionable citations, giving them the edge over Speaker B.",
+            "pro_score": 19,
+            "con_score": 17
+          }
+        ]
       },
-      {
-        "speaker_a_logic": 7,
-        "speaker_a_evidence": 6,
-        "speaker_a_persuasion": 7,
-        "speaker_b_logic": 5,
-        "speaker_b_evidence": 4,
-        "speaker_b_persuasion": 6,
-        "round_winner": "pro",
-        "reasoning": "Speaker A presents a more coherent logical chain and cites multiple studies, albeit with some citation issues, while Speaker B relies on alarmist claims with weaker evidence.",
-        "pro_score": 20,
-        "con_score": 15
-      },
-      {
-        "speaker_a_logic": 7,
-        "speaker_a_evidence": 5,
-        "speaker_a_persuasion": 7,
-        "speaker_b_logic": 6,
-        "speaker_b_evidence": 5,
-        "speaker_b_persuasion": 7,
-        "round_winner": "pro",
-        "reasoning": "Speaker A presents a slightly stronger logical chain and more compelling persuasive framing, edging out Speaker B despite both having modest evidentiary support.",
-        "pro_score": 19,
-        "con_score": 18
-      },
-      {
-        "speaker_a_logic": 6,
-        "speaker_a_evidence": 5,
-        "speaker_a_persuasion": 7,
-        "speaker_b_logic": 5,
-        "speaker_b_evidence": 5,
-        "speaker_b_persuasion": 6,
-        "round_winner": "pro",
-        "reasoning": "Speaker A presents a more coherent and persuasive case with slightly stronger logical structure and comparable evidence, giving them the edge.",
-        "pro_score": 18,
-        "con_score": 16
-      },
-      {
-        "speaker_a_logic": 7,
-        "speaker_a_evidence": 5,
-        "speaker_a_persuasion": 7,
-        "speaker_b_logic": 6,
-        "speaker_b_evidence": 5,
-        "speaker_b_persuasion": 6,
-        "round_winner": "pro",
-        "reasoning": "Speaker A scores higher overall due to stronger logical coherence and more persuasive framing, despite some questionable citations, giving them the edge over Speaker B.",
-        "pro_score": 19,
-        "con_score": 17
+      "position_bias": {
+        "pro_text": "Social media's immense influence on society, public discourse, and elections warrants its regulation as a public utility, ensuring equitable access, protection of user data, and mitigation of harmful content dissemination. In the wake of Cambridge Analytica's data misuse scandal, public trust in social media platforms has been severely undermined. A study by the Pew Research Center found that 69% of Americans believe social media companies have too much power, and 59% support regulating them. In addressing these concerns, implementing strict data protection laws, like the European General Data Protection Regulation (GDPR), can safeguard users' personal information and prevent further scandals like Cambridge Analytica. Such regulations would reinforce public trust, fostering an environment conducive to healthy online engagement and discourse. Furthermore, enforcing clear guidelines for ad transparency would prevent propagandistic and misleading content, maintaining the credibility of public discourse and combatting misinformation. Moreover, the role of social media in shaping public opinion has grown exponentially in recent years, particularly during elections. A survey conducted by the BBC World Service in 2019 reveals that 60% of Americans get their news from social media, highlighting the significant impact on our democracy. By regulating social media as a public utility, we can ensure that these platforms are held accountable for the dissemination of accurate information and curbing the spread of disinformation.",
+        "con_text": "Regulating social media as a public utility would stifle innovation and entrench existing market players, hindering the ability of new entrants to disrupt the industry and drive progress. According to a 2020 survey by the Information Technology and Innovation Foundation, the top five social media platforms in the United States \u2013 Facebook, Twitter, YouTube, Instagram, and TikTok \u2013 invested $15.8 billion in research and development last year, a crucial component of innovation and competition.\n\nMoreover, treating social media as a public utility would subject companies to stringent, one-size-fits-all regulatory standards, potentially stifling the development of emerging features and technologies. A prime example is the European Union's General Data Protection Regulation (GDPR), which was initially intended to safeguard user data but has led to widespread confusion and bureaucratic barriers, stifling innovation in data-driven industries.\n\nFurthermore, public utility regulation would likely lead to a de facto monopoly, as the largest platforms would be able to absorb the costs of compliance and dictate industry standards. The 1996 Telecommunications Act's imposition of Title II regulation on the internet service provider AT&T led to a period of reduced infrastructure investment and innovation, ultimately harming consumers and the overall internet ecosystem.",
+        "score_no_swap": {
+          "speaker_a_logic": 7,
+          "speaker_a_evidence": 7,
+          "speaker_a_persuasion": 7,
+          "speaker_b_logic": 5,
+          "speaker_b_evidence": 4,
+          "speaker_b_persuasion": 5,
+          "round_winner": "pro",
+          "reasoning": "Speaker A presents a more coherent logical structure supported by credible\u2011looking data, while Speaker B relies on weaker, partly inaccurate evidence and logical leaps.",
+          "pro_score": 21,
+          "con_score": 14
+        },
+        "score_swap": {
+          "speaker_a_logic": 6,
+          "speaker_a_evidence": 5,
+          "speaker_a_persuasion": 6,
+          "speaker_b_logic": 7,
+          "speaker_b_evidence": 8,
+          "speaker_b_persuasion": 8,
+          "round_winner": "pro",
+          "reasoning": "Speaker B offers clearer empirical support and a more coherent logical case, whereas Speaker A relies on weaker analogies and less convincing evidence.",
+          "pro_score": 23,
+          "con_score": 17
+        }
       }
-    ]
+    }
   },
-  "position_bias": {
-    "pro_text": "Social media's immense influence on society, public discourse, and elections warrants its regulation as a public utility, ensuring equitable access, protection of user data, and mitigation of harmful content dissemination. In the wake of Cambridge Analytica's data misuse scandal, public trust in social media platforms has been severely undermined. A study by the Pew Research Center found that 69% of Americans believe social media companies have too much power, and 59% support regulating them. In addressing these concerns, implementing strict data protection laws, like the European General Data Protection Regulation (GDPR), can safeguard users' personal information and prevent further scandals like Cambridge Analytica. Such regulations would reinforce public trust, fostering an environment conducive to healthy online engagement and discourse. Furthermore, enforcing clear guidelines for ad transparency would prevent propagandistic and misleading content, maintaining the credibility of public discourse and combatting misinformation. Moreover, the role of social media in shaping public opinion has grown exponentially in recent years, particularly during elections. A survey conducted by the BBC World Service in 2019 reveals that 60% of Americans get their news from social media, highlighting the significant impact on our democracy. By regulating social media as a public utility, we can ensure that these platforms are held accountable for the dissemination of accurate information and curbing the spread of disinformation.",
-    "con_text": "Regulating social media as a public utility would stifle innovation and entrench existing market players, hindering the ability of new entrants to disrupt the industry and drive progress. According to a 2020 survey by the Information Technology and Innovation Foundation, the top five social media platforms in the United States \u2013 Facebook, Twitter, YouTube, Instagram, and TikTok \u2013 invested $15.8 billion in research and development last year, a crucial component of innovation and competition.\n\nMoreover, treating social media as a public utility would subject companies to stringent, one-size-fits-all regulatory standards, potentially stifling the development of emerging features and technologies. A prime example is the European Union's General Data Protection Regulation (GDPR), which was initially intended to safeguard user data but has led to widespread confusion and bureaucratic barriers, stifling innovation in data-driven industries.\n\nFurthermore, public utility regulation would likely lead to a de facto monopoly, as the largest platforms would be able to absorb the costs of compliance and dictate industry standards. The 1996 Telecommunications Act's imposition of Title II regulation on the internet service provider AT&T led to a period of reduced infrastructure investment and innovation, ultimately harming consumers and the overall internet ecosystem.",
-    "score_no_swap": {
-      "speaker_a_logic": 7,
-      "speaker_a_evidence": 7,
-      "speaker_a_persuasion": 7,
-      "speaker_b_logic": 5,
-      "speaker_b_evidence": 4,
-      "speaker_b_persuasion": 5,
-      "round_winner": "pro",
-      "reasoning": "Speaker A presents a more coherent logical structure supported by credible\u2011looking data, while Speaker B relies on weaker, partly inaccurate evidence and logical leaps.",
-      "pro_score": 21,
-      "con_score": 14
-    },
-    "score_swap": {
-      "speaker_a_logic": 6,
-      "speaker_a_evidence": 5,
-      "speaker_a_persuasion": 6,
-      "speaker_b_logic": 7,
-      "speaker_b_evidence": 8,
-      "speaker_b_persuasion": 8,
-      "round_winner": "pro",
-      "reasoning": "Speaker B offers clearer empirical support and a more coherent logical case, whereas Speaker A relies on weaker analogies and less convincing evidence.",
-      "pro_score": 23,
-      "con_score": 17
+  {
+    "timestamp": "2026-07-27T22:19:16.182728",
+    "results": {
+      "judge_consistency": {
+        "pro_text": "The implementation of Universal Basic Income (UBI) presents a promising solution to address the complex socioeconomic challenges modern societies face. A substantial study conducted by the National Bureau of Economic Research demonstrates that providing direct cash assistance significantly increases local economic growth. Specifically, the 2020 study found that UBI trial implementations in Finland and Ontario led to increased consumer spending in local markets, thereby cultivating a resilient grassroots economic drive. Moreover, UBI has the potential to diminish healthcare costs associated with economic inequality. The Stockton Economic Empowerment Demonstration (SEED) project illustrated that participants with guaranteed income experienced lower rates of chronic fatigue and emergency healthcare visits. By mitigating the detrimental health consequences of poverty and efficiently reallocating healthcare resources, UBI acts as a wise investment in human capital, allowing individuals to pursue educational opportunities and entrepreneurial endeavors. For instance, the UBI concept has been successfully tested and implemented in the form of the Alaska Permanent Fund Dividend program, providing Alaskan residents with a portion of the state's oil revenue, which empowers residents with financial security to invest in their personal and professional growth. Establishing a reliable foundation of financial stability enables citizens to address longstanding issues, such as the inequality that plagues modern economies, including the COVID-19 pandemic amplified disparities.",
+        "con_text": "Implementing a universal basic income on a global scale would exacerbate existing wealth disparities and undermine efforts to alleviate poverty. According to the 2017 study by the World Bank, \"Universal Basic Income in Developing Countries: Experimental Evidence on its Impacts in Uganda,\" broad cash transfers in Uganda led to increased consumption and reduced psychological stress, but simultaneously resulted in reduced labor supply and education investment among recipients (World Bank, 2017). This outcome underscores the need for targeted social programs tailored to specific contexts rather than blanket transfers. Empirical evidence from the Ontario Basic Income Pilot in Canada, which ceased in 2019, also highlights the challenges of implementing a universal basic income. The preliminary analysis by the Ontario Basic Income Pilot found a statistically significant decrease in employment hours among participants (Katz and Krueger, 2020). Adopting a universal basic income worldwide would further entangle global economies in an untested policy, potentially destabilizing social safety nets and economic institutions. Moreover, the feasibility of a universal basic income on a global scale would be further complicated by variations in economic development, institutional frameworks, and cultural contexts. A global implementation would necessitate significant fiscal coordination and resource allocation, potentially hindering the effectiveness of targeted, locally-tailored poverty reduction strategies.",
+        "runs": [
+          {
+            "speaker_a_logic": 8,
+            "speaker_a_evidence": 7,
+            "speaker_a_persuasion": 8,
+            "speaker_b_logic": 6,
+            "speaker_b_evidence": 6,
+            "speaker_b_persuasion": 6,
+            "round_winner": "pro",
+            "reasoning": "Speaker A presents a more coherent logical chain with credible evidence and a persuasive narrative, while Speaker B's argument contains weaker logical connections and less compelling use of evidence.",
+            "pro_score": 23,
+            "con_score": 18
+          },
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 8,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 6,
+            "speaker_b_evidence": 5,
+            "speaker_b_persuasion": 6,
+            "round_winner": "pro",
+            "reasoning": "Speaker A provides more concrete, verifiable evidence and a clearer logical link between UBI benefits and broader outcomes, resulting in higher overall scores.",
+            "pro_score": 22,
+            "con_score": 17
+          },
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 6,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 7,
+            "speaker_b_evidence": 5,
+            "speaker_b_persuasion": 6,
+            "round_winner": "pro",
+            "reasoning": "Speaker A presents a more balanced set of credible examples and makes a stronger persuasive case, while Speaker B's evidence is less verifiable, giving A the edge.",
+            "pro_score": 20,
+            "con_score": 18
+          },
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 7,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 8,
+            "speaker_b_evidence": 8,
+            "speaker_b_persuasion": 8,
+            "round_winner": "con",
+            "reasoning": "Speaker B provides tighter logical links and cites solid empirical studies that directly challenge universal implementation, resulting in higher scores across all criteria.",
+            "pro_score": 21,
+            "con_score": 24
+          },
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 6,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 8,
+            "speaker_b_evidence": 7,
+            "speaker_b_persuasion": 7,
+            "round_winner": "con",
+            "reasoning": "Speaker B presents a slightly stronger case overall, with marginally higher scores in logic and evidence while matching Speaker A in persuasion.",
+            "pro_score": 20,
+            "con_score": 22
+          }
+        ]
+      },
+      "position_bias": {
+        "pro_text": "In light of the increasing impact of social media on public discourse, electoral processes, and individual mental health, I argue in favor of regulating social media as a public utility. Recent events have highlighted the need for oversight to ensure fairness, accountability, and protection of user data. A study published in Science Direct reveals that misinformation circulating on social media can sway public opinion, which directly affects democratic governance. By treating social media as a public utility, authorities can implement measures to combat digital misinformation and promote transparent information dissemination (Science Direct citation pending). Furthermore, social media platforms have become crucial channels for shaping individual well-being and mental health. Research conducted by the Pew Research Center reveals that these platforms can exacerbate loneliness, depression, and anxiety among users, especially young individuals. By regulating social media as a public utility, policymakers can enforce policies to ensure responsible content moderation and protect users from harmful online effects (Pew Research Center citation pending). Additionally, recognizing social media as a public utility would bolster data privacy protections. In 2018, Facebook faced severe backlash for mismanaging user data.",
+        "con_text": "Regulating social media as a public utility would stifle innovation and undermine the very qualities that have enabled these platforms to democratize global communication. According to a 2020 MIT study on the effects of internet regulation, overly restrictive policies can lead to a 25% decrease in online startups and small businesses, disproportionately harming marginalized communities that rely on social media for networking and resource sharing. Moreover, public utility regulation typically involves centralized control, which would run counter to the decentralized and user-driven ethos that has characterized social media's growth. History has shown that such top-down approaches to regulation can be inflexible and slow to adapt to emerging challenges, as exemplified by the failure of China's \"Great Firewall\" to effectively suppress dissent. The unique challenges posed by social media do not necessitate a drastic shift towards public utility regulation. Effective solutions, such as industry-led standards for platform moderation and enhanced transparency requirements, can be implemented without stifling innovation or imposing excessive bureaucratic burdens. Furthermore, over-regulation of social media as a public utility could lead to censorship and suppression of dissenting voices. Research by the Knight First Amendment Institute at Columbia University (2022) showed that overly broad content moderation guidelines can result in the silencing of marginalized groups and whistleblowers, ultimately undermining the democratic potential of online discourse.",
+        "score_no_swap": {
+          "speaker_a_logic": 7,
+          "speaker_a_evidence": 4,
+          "speaker_a_persuasion": 6,
+          "speaker_b_logic": 7,
+          "speaker_b_evidence": 4,
+          "speaker_b_persuasion": 7,
+          "round_winner": "con",
+          "reasoning": "Both speakers present logically coherent arguments, but Speaker B's appeal to innovation and freedom, combined with slightly stronger persuasive framing, gives them the edge.",
+          "pro_score": 17,
+          "con_score": 18
+        },
+        "score_swap": {
+          "speaker_a_logic": 8,
+          "speaker_a_evidence": 7,
+          "speaker_a_persuasion": 7,
+          "speaker_b_logic": 6,
+          "speaker_b_evidence": 4,
+          "speaker_b_persuasion": 6,
+          "round_winner": "con",
+          "reasoning": "Speaker A presents a more logically coherent argument with concrete study references and stronger persuasive framing, while Speaker B relies on vague citations and assumes outcomes without sufficient justification.",
+          "pro_score": 16,
+          "con_score": 22
+        }
+      }
+    }
+  },
+  {
+    "timestamp": "2026-07-27T22:22:42.849511",
+    "results": {
+      "judge_consistency": {
+        "pro_text": "Adopting a universal basic income (UBI) should be implemented globally for several compelling reasons. A well-structured 2017 study by the Institute for Health Metrics and Evaluation shows that UBI can effectively combat income inequality and reduce poverty, which is crucial for addressing social discrepancies, fostering social cohesion, and promoting public health and well-being. In addition to addressing social and health issues, UBI provides a strong foundation for economic growth. A study published in the Journal of Political Economy by Acemoglu and Robinson in 2016 demonstrates that, in situations with significant wealth disparity, introducing a UBI ensures individuals have a reliable source of income, enabling them to invest in education, training, and entrepreneurship endeavors. This, in turn, leads to a more educated, skilled workforce and innovative business ventures, unlocking untapped economic potential and expanding global prosperity. Furthermore, the implementation of UBI can provide a safety net for unforeseen challenges, fostering resilience in both the economy and society as a whole. In Finland's 2017 two-year Kuopio experiment, an overwhelming 60% of participants reported decreased stress levels, leading to increased productivity, creativity, and overall well-being \u2013 making societies more adept at addressing and mitigating crises effectively. Consequently, UBI can serve as a robust safeguard against economic shocks, protecting global stability and fostering adaptability.",
+        "con_text": "Implementing a universal basic income on a global scale would precipitate an unprecedented economic crisis, exacerbating pre-existing fiscal woes. A 2022 study published in the Journal of Development Economics found that providing unconditional cash transfers to low-income households in Kenya resulted in a significant decrease in entrepreneurial activity, leading to increased unemployment (Ashraf et al.). This outcome underscores the potential for universal basic income to disincentivize productive work, thereby compromising economic growth.\n\nCritically, a worldwide UBI would necessitate enormous financial investments, potentially jeopardizing the stability of international economic systems. The International Monetary Fund estimated that implementing a global basic income would require upwards of $5 trillion annually, a sum that would necessitate substantial increases in taxes or drastic reductions in critical social programs (IMF). Such drastic measures would be economically perilous and would likely exacerbate existing social and economic disparities.\n\nFurthermore, imposing a worldwide basic income would overlook the diverse economic contexts and needs of different nations. A 2019 report by the United Nations Development Programme highlighted the varying economic realities of different regions, emphasizing the need for context-specific solutions to poverty and inequality (UNDP). A one-size-fits-all approach would overlook these nuances, potentially resulting in a flawed and ineffective policy.",
+        "runs": [
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 6,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 6,
+            "speaker_b_evidence": 4,
+            "speaker_b_persuasion": 6,
+            "round_winner": "pro",
+            "reasoning": "Speaker A presents a more logically coherent case with generally credible evidence and persuasive framing, while Speaker B relies on questionable citations and overgeneralizes from limited data.",
+            "pro_score": 20,
+            "con_score": 16
+          },
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 5,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 7,
+            "speaker_b_evidence": 6,
+            "speaker_b_persuasion": 7,
+            "round_winner": "con",
+            "reasoning": "Speaker B scores slightly higher overall due to marginally stronger evidence citations and equally solid logical structure and persuasive tone.",
+            "pro_score": 19,
+            "con_score": 20
+          },
+          {
+            "speaker_a_logic": 6,
+            "speaker_a_evidence": 5,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 7,
+            "speaker_b_evidence": 6,
+            "speaker_b_persuasion": 7,
+            "round_winner": "con",
+            "reasoning": "Speaker B presents a more logically coherent argument with fewer overgeneralizations and backs claims with credible\u2011sounding sources, earning higher scores overall.",
+            "pro_score": 18,
+            "con_score": 20
+          },
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 5,
+            "speaker_a_persuasion": 7,
+            "speaker_b_logic": 7,
+            "speaker_b_evidence": 5,
+            "speaker_b_persuasion": 7,
+            "round_winner": "tie",
+            "reasoning": "Both speakers present logically coherent arguments with some causal leaps, and each relies on cited studies that are either misattributed or lack clear verification, resulting in comparable evidence and persuasive quality.",
+            "pro_score": 19,
+            "con_score": 19
+          },
+          {
+            "speaker_a_logic": 7,
+            "speaker_a_evidence": 4,
+            "speaker_a_persuasion": 6,
+            "speaker_b_logic": 6,
+            "speaker_b_evidence": 4,
+            "speaker_b_persuasion": 6,
+            "round_winner": "pro",
+            "reasoning": "Speaker A presents a more coherent logical chain, while both speakers have similarly weak evidential support; A's overall argument is slightly stronger.",
+            "pro_score": 17,
+            "con_score": 16
+          }
+        ]
+      },
+      "position_bias": {
+        "pro_text": "In the age of digital connectivity, regulated oversight of social media platforms as public utilities holds tremendous benefits for society. By adopting a public utility approach, we ensure essential internet services remain held in the public's interest, safeguarding against unfettered profit maximization. A 2014 Harvard Law Review study reveals that utilities, upon regulation, prioritize public welfare, giving more emphasis on access and affordability, rather than bottom-line profit.\n\nMoreover, establishing regulatory frameworks would combat the spread of disinformation and fake news. A study published in Science Direct by University of Maryland researchers demonstrated a significant correlation between increased regulation and decreased spread of misinformation in the electric power sector. Adapting similar strategies can impede the rampant circulation of false content and promote transparent, truthful information on social media platforms.\n\nFurthermore, prioritizing public interest would prevent monopolies and facilitate innovation. In the telecom sector, diverse companies drive competition and innovation due to regulated caps on market shares, as discussed in a December 2020 article by the Federal Communications Commission. By regulating social media as public utilities, we promote similar levels of competitiveness, fostering innovation and user benefits. ",
+        "con_text": "Regulating social media as a public utility would stifle innovation, as companies like Facebook and Twitter have invested billions in building and maintaining complex networks that facilitate global communication and connection. According to a 2020 report by the World Economic Forum, these platforms have generated over $500 billion in economic value since their inception (WF 2020). A utility-style regulatory framework, which would subject social media companies to rate-of-return regulation and strict oversight by government agencies, would likely deter future investment in these critical communication infrastructure assets.\n\nMoreover, overregulation could inadvertently drive social media activity underground, making online spaces even more vulnerable to cybercrime and harassment. Research by Jonathan Zittrain, a renowned internet law expert, suggests that overly restrictive regulations can have unintended effects on digital ecosystems (Zittrain 2008). By forcing social media companies to conform to rigid standards, governments risk pushing users toward unregulated platforms that may be less secure and more susceptible to exploitation.\n\nRegulating social media as a public utility would also raise difficult questions about what constitutes \"essential\" and \"non-essential\" services. Would online shopping platforms, for instance, be subject to the same level of oversight as messaging apps or social networking sites? Answering these questions will require policymakers to confront the complex, ever-evolving nature of digital technology.",
+        "score_no_swap": {
+          "speaker_a_logic": 5,
+          "speaker_a_evidence": 3,
+          "speaker_a_persuasion": 6,
+          "speaker_b_logic": 8,
+          "speaker_b_evidence": 7,
+          "speaker_b_persuasion": 8,
+          "round_winner": "con",
+          "reasoning": "Speaker B presents a logically coherent argument supported by credible sources and persuasive framing, while Speaker A relies on weak analogies and questionable citations.",
+          "pro_score": 14,
+          "con_score": 23
+        },
+        "score_swap": {
+          "speaker_a_logic": 8,
+          "speaker_a_evidence": 7,
+          "speaker_a_persuasion": 7,
+          "speaker_b_logic": 6,
+          "speaker_b_evidence": 5,
+          "speaker_b_persuasion": 6,
+          "round_winner": "con",
+          "reasoning": "Speaker A presents a more internally consistent argument with fewer logical leaps and cites sources directly relevant to social media regulation, earning higher scores across all criteria.",
+          "pro_score": 17,
+          "con_score": 22
+        }
+      }
     }
   }
-}
+]
