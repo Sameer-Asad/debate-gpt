@@ -1,0 +1,50 @@
+# Debate-GPT backend — .dockerignore (PRD §8.2)
+# Keeps the build context small and the image free of dev-only artifacts.
+
+# Version control
+.git/
+.gitignore
+
+# Python dev artifacts
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Virtual environments
+venv/
+.venv/
+
+# Secrets — never bake these into an image; set them as platform env vars
+.env
+.env.local
+.env.example
+
+# Tests — not needed in the runtime image
+tests/
+eval_results.csv
+eval_results_raw.json
+
+# Frontend — deployed separately to Vercel, not part of the backend image
+frontend/
+node_modules/
+
+# Runtime artifacts
+logs/
+server_output.log
+
+# Claude Code tooling / project docs — not needed in the container
+.claude/
+.claude.json
+CLAUDE.md
+PROGRESS.md
+PRD.md
+docs/
+README.md
+
+# OS / editor cruft
+.DS_Store
+*.swp

@@ -82,6 +82,16 @@ export default function SessionSidebar() {
     }
   }
 
+  // "New Chat" — the "/" route already renders HomePage -> an empty
+  // DebateForm (see main.jsx + HomePage.jsx), so this is pure client-side
+  // navigation. No backend call needed: nothing is created until the
+  // user actually submits a topic via POST /debate/start.
+  function handleNewChat() {
+    navigate("/");
+  }
+
+  const isHome = location.pathname === "/";
+
   return (
     <div className="h-full flex flex-col">
       <div className="p-4 border-b border-slate-200">
@@ -92,6 +102,18 @@ export default function SessionSidebar() {
           Debate-GPT
         </Link>
         <div className="text-xs text-slate-500 mt-0.5">Past debates</div>
+      </div>
+
+      <div className="p-3 border-b border-slate-200">
+        <button
+          type="button"
+          onClick={handleNewChat}
+          disabled={isHome}
+          className="w-full flex items-center justify-center gap-1.5 rounded-lg bg-indigo-600 text-white text-sm font-medium py-2 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          <span className="text-base leading-none">+</span>
+          New chat
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
