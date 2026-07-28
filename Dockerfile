@@ -42,8 +42,16 @@ COPY migrations/ ./migrations/
 COPY alembic.ini .
 COPY run_api.py .
 
+# Pre-create the logs/ directory and hand ownership to the non-root user
+# BEFORE switching to it. observability/logging.py calls
+# os.makedirs("logs", exist_ok=True) at import time to set up the JSON
+# file sink — without this, /app is root-owned and appuser gets a
+# PermissionError on startup (the exact crash this fixes).
+RUN mkdir -p /app/logs
+
 # Non-root user for security.
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+RUN chown -R appuser:appgroup /app
 USER appuser
 
 EXPOSE 8000
