@@ -1,71 +1,117 @@
 # Debate-GPT
 
-Multi-agent AI debate platform. Two LLM agents argue opposing sides of a user-supplied topic, a third (more powerful) model scores each round as an impartial judge, and a final verdict is declared.
+A multi-agent AI debate platform. Two LLMs argue opposing sides of any
+topic you give it, a third (more powerful) model judges each round on
+logic, evidence, and persuasion, and a final verdict is declared —
+streamed live to the browser.
 
-The full PRD lives in [`PRD.md`](PRD.md) — read it before changing architecture.
+Built as a portfolio project demonstrating multi-agent orchestration,
+LLM-as-Judge evaluation, structured output enforcement, real-time
+streaming, and full-stack AI engineering — end to end, including the
+failure modes: bias mitigation, judge consistency, and length-imbalance
+bugs, all measured with a real eval suite rather than assumed away.
 
-## Quick start
+**Live demo:** https://debate-gpt-tau.vercel.app
+**Backend API:** https://debate-gpt-production.up.railway.app
+
+> ⚠️ This is a shared demo environment with no authentication — every
+> visitor sees the same debate history. Don't treat it as private.
+
+## How it works
+
+1. You submit a topic → the backend creates a session and kicks off a
+   background task
+2. A LangGraph state machine runs the debate: `Pro → Con → Judge`,
+   looping for N rounds
+3. The Judge never sees the words "Pro" or "Con" — only "Speaker A" and
+   "Speaker B" — to prevent position-label bias in scoring
+4. Every token is streamed live to the browser via Server-Sent Events
+   (backed by Redis Streams, since Upstash's REST API can't hold a
+   `SUBSCRIBE` connection)
+5. The final transcript, scores, and winner are persisted to Postgres
+
+## Quick start (local)
 
 ```bash
 # 1. Install
 python -m venv venv
-source venv/bin/activate          # POSIX
 venv\Scripts\activate             # Windows
+source venv/bin/activate          # macOS/Linux
 pip install -r requirements.txt
 
 # 2. Configure
-cp .env.example .env              # then fill in real keys
+cp .env.example .env              # fill in your real API keys
 
-# 3. Apply DB schema (Neon Postgres)
+# 3. Apply the DB schema (Neon Postgres)
 alembic upgrade head
 
-# 4. Run the API
+# 4. Run the backend
 python run_api.py                 # http://localhost:8000
-```
 
-## Running the test suite (Day 5)
-
-The pytest suite runs **fully offline** — no real LLM, Redis, or Postgres calls. `tests/conftest.py` injects in-memory fakes at every external I/O boundary.
-
-```bash
-# Full suite with coverage (preferred)
-make test
-# Equivalent: pytest --cov=src/debate_gpt --cov-report=term-missing tests/
-
-# Just unit tests (skip integration)
-make test-unit
-# Equivalent: pytest tests/unit/ -m "not integration"
-
-# Just integration tests
-make test-integration
-# Equivalent: pytest tests/integration/
-
-# Plain pytest (no coverage)
-python -m pytest tests/
-```
-
-The `make test` target reports a per-file coverage table via `term-missing`. Day 5 is done when overall line coverage is **> 80%**. See `PROGRESS.md` for the live status.
-
-## Test layout
-
-| Directory | Contents |
-|---|---|
-| `tests/unit/` | Pure-Python tests: state, schemas, prompts, verdict aggregation, redis_stream wrapper, session_utils. |
-| `tests/integration/` | Full FastAPI app via `httpx.AsyncClient` + `ASGITransport`. Drives every route (`POST /debate/start`, `GET /debate/{id}/stream`, `GET /debate/{id}/result`, `GET /debates`, `DELETE /debate/{id}`, `GET /health`) with the in-memory Redis + DB fakes. |
-| `tests/evals/` | Bare scaffold for Day 6 (real-LLM eval suite: judge consistency, position-bias, schema compliance, argument quality). Not collected by default. |
-
-`pyproject.toml` configures pytest with `asyncio_mode = "auto"` and registers the `integration` marker, so async tests are picked up without an explicit decorator.
-
-## Day-by-day status
-
-See [`PROGRESS.md`](PROGRESS.md) for the live sprint tracker (Days 1–7, per PRD §11).
-
-## Frontend
-
-The Day-4 React frontend lives in `frontend/`. See `tests/manual_day4.md` for the end-to-end smoke procedure.
-
-```bash
+# 5. Run the frontend (separate terminal)
 cd frontend
 npm install
-npm run dev      # http://localhost:5173
+npm run dev                       # http://localhost:5173
+```
+
+## Project structure
+
+```
+debate-gpt/
+├── src/debate_gpt/        # Backend — the actual system
+│   ├── graph.py           #   LangGraph wiring: Pro → Con → Judge → loop
+│   ├── agents.py          #   LLM clients + node logic (streaming, retries,
+│   │                      #   length enforcement)
+│   ├── prompts.py         #   System prompts for all 3 agents + persona styles
+│   ├── schemas.py         #   RoundScore — the judge's structured output contract
+│   ├── verdict.py         #   Score tallying, swap-aware Pro/Con totals
+│   ├── state.py           #   The LangGraph state definition
+│   ├── api.py             #   FastAPI routes (start/stream/result/list/delete/health)
+│   ├── db.py               #   Postgres access (asyncpg)
+│   ├── redis_stream.py    #   Upstash Redis Streams wrapper (SSE backing store)
+│   └── observability/     #   Logging + /health
+│
+├── frontend/               # React + Vite + Tailwind UI
+│   └── src/
+│       ├── pages/          #   HomePage (new debate), DebatePage (live view)
+│       ├── components/     #   SessionSidebar, DebateForm, RoundCard,
+│       │                   #   JudgeScorecard, VerdictBanner
+│       └── hooks/          #   useDebateStream — the SSE consumer
+│
+├── tests/
+│   ├── unit/                #   Pure-Python tests (schemas, verdict, prompts, etc.)
+│   ├── integration/         #   Full FastAPI app tests via httpx + in-memory fakes
+│   └── evals/                #   Real-LLM eval suite (judge consistency, position
+│                              #   bias) — see eval_results.csv for actual findings
+│
+├── migrations/              # Alembic — Postgres schema
+├── Dockerfile               # Multi-stage build, deployed to Railway
+├── PRD.md                   # Full product requirements doc
+└── PROGRESS.md              # Sprint tracker (Days 1-7)
+```
+
+## Eval findings
+
+The eval suite (`tests/evals/`, real LLM calls, results in
+`eval_results.csv` / `eval_results_raw.json`) surfaced a genuine finding
+worth calling out rather than hiding:
+
+- **Judge consistency**: PASS — scoring the same argument pair 5 times
+  produced a max standard deviation of 0.7 points per criterion (well
+  under the 1.5 threshold).
+- **Position bias**: FAIL — swapping which side is labeled "Speaker A"
+  vs "Speaker B" changed the derived Pro/Con totals by up to 3 points
+  (threshold was ±1.0). Digging into the raw scores showed this isn't
+  actually *pro/con* bias — the Speaker A/B relabeling works as intended
+  — it's a **presentation-order bias**: the judge consistently scores
+  whichever argument is presented *second* in the prompt more
+  favorably, regardless of which side occupies that slot. The
+  mitigation in place stops position-*label* bias but not
+  presentation-*order* bias; randomizing which side is shown first
+  (not just which label it gets) would be the next fix.
+
+## Running tests
+
+```bash
+python -m pytest tests/ --cov=src/debate_gpt --cov-report=term-missing
 ```

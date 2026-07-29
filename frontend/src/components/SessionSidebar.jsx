@@ -35,7 +35,10 @@ function winnerChip(winner) {
   );
 }
 
-export default function SessionSidebar() {
+// `onClose` is provided by App.jsx on mobile (closes the overlay drawer
+// after navigating or tapping the X). It's a no-op on desktop where the
+// sidebar is always visible, but the prop is safe to call either way.
+export default function SessionSidebar({ onClose = () => {} }) {
   const [debates, setDebates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -88,20 +91,39 @@ export default function SessionSidebar() {
   // user actually submits a topic via POST /debate/start.
   function handleNewChat() {
     navigate("/");
+    onClose();
+  }
+
+  function handleSelectDebate(id) {
+    navigate(`/debate/${id}`);
+    onClose();
   }
 
   const isHome = location.pathname === "/";
 
   return (
     <div className="h-full flex flex-col">
-      <div className="p-4 border-b border-slate-200">
-        <Link
-          to="/"
-          className="text-base font-semibold text-slate-900 hover:text-indigo-600"
+      <div className="p-4 border-b border-slate-200 flex items-center justify-between gap-2">
+        <div>
+          <Link
+            to="/"
+            className="text-base font-semibold text-slate-900 hover:text-indigo-600"
+            onClick={onClose}
+          >
+            Debate-GPT
+          </Link>
+          <div className="text-xs text-slate-500 mt-0.5">Past debates</div>
+        </div>
+        {/* Close button — mobile only. Desktop sidebar is always open,
+            so this is hidden there via md:hidden. */}
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close sidebar"
+          className="md:hidden shrink-0 w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
         >
-          Debate-GPT
-        </Link>
-        <div className="text-xs text-slate-500 mt-0.5">Past debates</div>
+          <span className="text-lg leading-none">✕</span>
+        </button>
       </div>
 
       <div className="p-3 border-b border-slate-200">
@@ -135,7 +157,7 @@ export default function SessionSidebar() {
           return (
             <div
               key={d.id}
-              onClick={() => navigate(`/debate/${d.id}`)}
+              onClick={() => handleSelectDebate(d.id)}
               className={`group rounded p-2 cursor-pointer hover:bg-slate-50 ${
                 isActive ? "bg-indigo-50" : ""
               }`}
