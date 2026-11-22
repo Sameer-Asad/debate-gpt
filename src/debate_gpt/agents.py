@@ -192,25 +192,26 @@ def _ensure_min_words(
 def build_llms() -> dict[str, Any]:
     settings = load_settings()
 
-    pro = ChatGroq(
-        model="allam-2-7b",
-        temperature=0.9,
-        api_key=settings["groq_api_key"],
+    pro = ChatOpenAI(
+    model="nvidia/nemotron-3.5-lightning:free",
+    temperature=0.9,
+    api_key=settings["openrouter_api_key"],
+    base_url="https://openrouter.ai/api/v1",
+    default_headers={
+        "HTTP-Referer": "https://github.com/SameerAsad/debate-gpt",
+        "X-Title": "debate-gpt",
+    }
     )
     con = ChatGroq(
-        model="llama-3.1-8b-instant",
-        temperature=0.9,
-        api_key=settings["groq_api_key"],
+    model="openai/gpt-oss-20b",   
+    temperature=0.9,
+    api_key=settings["groq_api_key"],
     )
-    judge = ChatOpenAI(
+    judge = ChatGroq(
         model="openai/gpt-oss-120b",
         temperature=0.2,
-        api_key=settings["openrouter_api_key"],
-        base_url="https://openrouter.ai/api/v1",
-        default_headers={
-            "HTTP-Referer": "https://github.com/SameerHandsome/debate-gpt",
-            "X-Title": "debate-gpt",
-        },
+        max_tokens=2500,
+        api_key=settings["groq_api_key"],
     )
     return {"pro": pro, "con": con, "judge": judge}
 
@@ -353,6 +354,71 @@ def make_judge_node(llm) -> NodeFn:
     return judge_node
 
 
+# ---------- Bidirectional judging (order-bias fix) ----------
+
+def judge_once(
+    llm,
+    state: DebateState,
+    pro_text: str,
+    con_text: str,
+    swap: bool,
+    stats: dict | None = None,
+) -> dict:
+    """Judge ONE presentation order, chosen explicitly (not by round parity).
+
+    swap=False: Pro is Speaker A (shown first).
+    swap=True:  Con is Speaker A (shown first).
+    Returns the RoundScore dict plus swap-corrected pro_score / con_score,
+    or the {"raw", "parse_error"} dict if the judge never produced valid JSON.
+    """
+    bundle = build_judge_messages(state, pro_text, con_text, swap=swap)
+    score = _invoke_judge_with_retry(llm, bundle.messages, max_retries=2, stats=stats)
+    if "parse_error" not in score:
+        score["round_winner"] = _translate_winner(score["round_winner"], swap)
+        score["pro_score"] = pro_total_for_round(score, swap)
+        score["con_score"] = con_total_for_round(score, swap)
+    return score
+
+
+def judge_bidirectional(
+    llm,
+    state: DebateState,
+    pro_text: str,
+    con_text: str,
+) -> dict:
+    """Judge BOTH orders (Pro first, then Con first) and average per side.
+
+    Any fixed "second speaker gets a bonus" effect lands on Pro in one call
+    and on Con in the other, so it cancels in the averaged margin.
+    Scores are floats (average of two ints). The verdict uses the averaged
+    totals, never the judge's own round_winner label.
+    """
+    pro_first = judge_once(llm, state, pro_text, con_text, swap=False)
+    con_first = judge_once(llm, state, pro_text, con_text, swap=True)
+
+    for label, s in (("pro_first", pro_first), ("con_first", con_first)):
+        if "parse_error" in s:
+            return {"parse_error": f"{label}: {s['parse_error']}",
+                    "pro_first": pro_first, "con_first": con_first}
+
+    pro_avg = (pro_first["pro_score"] + con_first["pro_score"]) / 2
+    con_avg = (pro_first["con_score"] + con_first["con_score"]) / 2
+    if pro_avg > con_avg:
+        winner = "pro"
+    elif con_avg > pro_avg:
+        winner = "con"
+    else:
+        winner = "tie"
+    return {
+        "pro_score": pro_avg,
+        "con_score": con_avg,
+        "round_winner": winner,
+        "orders_agree": pro_first["round_winner"] == con_first["round_winner"],
+        "pro_first": pro_first,
+        "con_first": con_first,
+    }
+
+
 # ---------- Helpers ----------
 
 def _extract_content(response: Any) -> str:
@@ -393,7 +459,9 @@ _RETRY_FEEDBACK_TMPL = (
 )
 
 
-def _invoke_judge_with_retry(llm, messages: list, max_retries: int = 2) -> dict:
+def _invoke_judge_with_retry(
+    llm, messages: list, max_retries: int = 2, stats: dict | None = None
+) -> dict:
     """Invoke the judge and return a RoundScore dict.
 
     Strategy:
@@ -406,20 +474,42 @@ def _invoke_judge_with_retry(llm, messages: list, max_retries: int = 2) -> dict:
 
     Always returns a dict. On full failure, returns
     `{"raw": ..., "parse_error": "..."}` so the graph keeps running.
+
+    Optional `stats` (a dict you pass in) is filled with schema-validity
+    info for the benchmark:
+      tier:      "structured"      valid on the very first call
+                 "fallback_first"  valid on the first plain-text parse
+                 "fallback_retry"  valid only after feedback retry
+                 "failed"          never valid
+      llm_calls: number of model calls used
+      errors:    short error strings (first 200 chars each)
     """
+    if stats is None:
+        stats = {}
+    stats.update(tier="failed", llm_calls=0, errors=[])
+
     # --- Path 1: structured output (tool calling) ---
     try:
         structured = llm.with_structured_output(RoundScore)
+        stats["llm_calls"] += 1
         result = structured.invoke(messages)
         if isinstance(result, RoundScore):
-            return result.model_dump()
-        # Some adapters return a dict already.
-        return RoundScore.model_validate(result).model_dump()
+            out = result.model_dump()
+        else:
+            # Some adapters return a dict already.
+            out = RoundScore.model_validate(result).model_dump()
+        stats["tier"] = "structured"
+        return out
     except _STRUCTURED_UNSUPPORTED as exc:
+        # NOTE: pydantic's ValidationError is a ValueError subclass, so
+        # validation failures also land here. Behavior is the same
+        # (fall back to path 2); only the log wording differs.
+        stats["errors"].append(f"structured: {exc}"[:200])
         logger.info(
             "structured_output unsupported (%s); falling back to manual parse", exc
         )
     except (ValidationError, OutputParserException, json.JSONDecodeError) as exc:
+        stats["errors"].append(f"structured: {exc}"[:200])
         logger.warning(
             "structured_output validation failed: %s; falling back to manual parse",
             exc,
@@ -430,13 +520,17 @@ def _invoke_judge_with_retry(llm, messages: list, max_retries: int = 2) -> dict:
     last_err: str | None = None
     last_raw: str | None = None
     for attempt in range(max_retries + 1):  # initial + max_retries retries
+        stats["llm_calls"] += 1
         response = llm.invoke(convo)
         raw = _extract_content(response)
         last_raw = raw
         try:
-            return _parse_judge_output_strict(raw)
+            out = _parse_judge_output_strict(raw)
+            stats["tier"] = "fallback_first" if attempt == 0 else "fallback_retry"
+            return out
         except (ValidationError, ValueError, json.JSONDecodeError) as exc:
             last_err = str(exc)
+            stats["errors"].append(f"fallback{attempt + 1}: {exc}"[:200])
             logger.warning(
                 "judge parse attempt %d/%d failed: %s",
                 attempt + 1,

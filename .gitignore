@@ -1,14 +1,32 @@
-﻿venv/
-__pycache__/
-*.pyc
+﻿# Environment / secrets
 .env
-node_modules/
-.env.local
+.env.*
+!.env.example
 
-# Day 3: runtime artifacts
-logs/
-*.egg-info/
+# Python
+venv/
 .venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+htmlcov/
+
+# Node / frontend
+node_modules/
+frontend/dist/
+
+# Runtime artifacts
+logs/
+*.log
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

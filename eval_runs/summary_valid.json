@@ -1,0 +1,150 @@
+{
+  "generated_at": "2026-11-22T14:47:05.263813+00:00",
+  "python": "3.12.5",
+  "models": {
+    "pro_model": "nvidia/nemotron-3.5-lightning:free",
+    "con_model": "openai/gpt-oss-20b",
+    "judge_model": "openai/gpt-oss-120b"
+  },
+  "valid_only": true,
+  "word_range": [
+    180,
+    220
+  ],
+  "excluded_pairs": [
+    {
+      "pair_id": 7,
+      "pro_words": 195,
+      "con_words": 0
+    },
+    {
+      "pair_id": 15,
+      "pro_words": 200,
+      "con_words": 68
+    },
+    {
+      "pair_id": 16,
+      "pro_words": 206,
+      "con_words": 0
+    },
+    {
+      "pair_id": 17,
+      "pro_words": 218,
+      "con_words": 0
+    }
+  ],
+  "pairs_requested": 20,
+  "pairs_with_both_orders": 20,
+  "judgments_ok": 80,
+  "judgments_total": 80,
+  "metric1_position_bias": {
+    "unit": "points on a 0-30 per-side scale (sum of 3 criteria)",
+    "threshold": 1.0,
+    "before_order_flipped_single_judge": {
+      "legacy_max_side_delta": {
+        "n": 40,
+        "mean": 2.75,
+        "median": 2.5,
+        "max": 8,
+        "share_ge_threshold": 0.925
+      },
+      "margin_gap": {
+        "n": 40,
+        "mean": 2.475,
+        "median": 2.0,
+        "max": 9,
+        "share_ge_threshold": 0.85
+      },
+      "winner_flip": {
+        "n": 40,
+        "flip_rate": 0.35
+      }
+    },
+    "noise_floor_same_order_repeated": {
+      "legacy_max_side_delta": {
+        "n": 40,
+        "mean": 2.3,
+        "median": 2.0,
+        "max": 8,
+        "share_ge_threshold": 0.9
+      },
+      "winner_flip": {
+        "n": 40,
+        "flip_rate": 0.3
+      }
+    },
+    "control_same_order_2call_average": {
+      "legacy_max_side_delta": {
+        "n": 0
+      },
+      "winner_flip": {
+        "n": 0,
+        "flip_rate": null
+      }
+    },
+    "after_bidirectional_two_independent_runs": {
+      "legacy_max_side_delta": {
+        "n": 20,
+        "mean": 1.65,
+        "median": 1.25,
+        "max": 4.5,
+        "share_ge_threshold": 0.85
+      },
+      "winner_flip": {
+        "n": 20,
+        "flip_rate": 0.25
+      }
+    },
+    "second_position_advantage_single_order": {
+      "mean": 0.163,
+      "ci95_bootstrap": [
+        -0.487,
+        0.762
+      ],
+      "note": "After (bidirectional) is 0 by construction: each side is first once and second once."
+    },
+    "pro_side_advantage_order_free": {
+      "mean": 1.238,
+      "ci95_bootstrap": [
+        0.362,
+        2.15
+      ]
+    }
+  },
+  "metric2_consistency_sigma": {
+    "per_criterion_mean_sd": {
+      "speaker_a_logic": 0.23,
+      "speaker_a_evidence": 0.477,
+      "speaker_a_persuasion": 0.283,
+      "speaker_b_logic": 0.354,
+      "speaker_b_evidence": 0.513,
+      "speaker_b_persuasion": 0.424
+    },
+    "mean_sd_all_criteria": 0.38,
+    "max_of_criterion_means": 0.513,
+    "worst_single_sd": {
+      "value": 2.828,
+      "where": "pair 10 con_first speaker_a_evidence"
+    },
+    "side_total_sd_single_order_mean": 1.069,
+    "side_total_sd_bidirectional_mean": 0.857
+  },
+  "metric3_schema_validity": {
+    "judge_calls_total": 80,
+    "tier_counts": {
+      "structured": 80,
+      "fallback_first": 0,
+      "fallback_retry": 0,
+      "failed": 0
+    },
+    "first_try_valid_pct": 100.0,
+    "valid_after_fallback_first_pct": 100.0,
+    "valid_after_all_retries_pct": 100.0,
+    "failed_pct": 0.0,
+    "mean_model_calls_per_judgment": 1.0
+  },
+  "metric4_length_check": {
+    "pearson_r_word_diff_vs_bidir_margin": -0.002,
+    "n_pairs": 20
+  }
+}
